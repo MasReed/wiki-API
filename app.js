@@ -29,52 +29,51 @@ const articleSchema = {
 const Article = new mongoose.model("Article", articleSchema);
 
 
-// Root route
-app.get('/', function(req, res){
-    res.send("<h2>Hello</h2>")
-});
+// 'Root' Methods
+app.route('/')
 
-
-// Articles Route GET
-app.get('/articles', function(req, res){
-    Article.find({}, function(err, foundArticles){
-        if (!err){
-            res.send(foundArticles);
-        } else {
-            res.send(err);
-        }
-    });
-});
-
-
-// Articles Route POST
-app.post('/articles', function(req, res){
-
-    const newArticle = new Article({
-        title: req.body.title,
-        content: req.body.content
-    });
-    newArticle.save(function(err){
-        if (!err) {
-            res.send("Successfully added a new article.");
-        } else {
-            res.send(err);
-        }
+    .get(function(req, res){
+        res.send("<h2>Hello</h2>")
     });
 
-});
 
+// 'Articles' Methods
+app.route('/articles')
 
-// Articles Route DELETE
-app.delete('/articles', function(req, res){
-    Article.deleteMany({}, function(err){
-        if (!err) {
-            res.send("Deleted all documents.");
-        } else {
-            res.send(err);
-        }
+    .get(function(req, res){
+        Article.find({}, function(err, foundArticles){
+            if (!err){
+                res.send(foundArticles);
+            } else {
+                res.send(err);
+            }
+        });
+    })
+
+    .post(function(req, res){
+
+        const newArticle = new Article({
+            title: req.body.title,
+            content: req.body.content
+        });
+        newArticle.save(function(err){
+            if (!err) {
+                res.send("Successfully added a new article.");
+            } else {
+                res.send(err);
+            }
+        });
+    })
+
+    .delete(function(req, res){
+        Article.deleteMany({}, function(err){
+            if (!err) {
+                res.send("Deleted all documents.");
+            } else {
+                res.send(err);
+            }
+        });
     });
-});
 
 
 // Server connection
