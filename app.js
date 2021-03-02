@@ -41,6 +41,7 @@ app.route('/')
 app.route('/articles')
 
     .get(function(req, res){
+
         Article.find({}, function(err, foundArticles){
             if (!err){
                 res.send(foundArticles);
@@ -50,12 +51,14 @@ app.route('/articles')
         });
     })
 
+
     .post(function(req, res){
 
         const newArticle = new Article({
             title: req.body.title,
             content: req.body.content
         });
+
         newArticle.save(function(err){
             if (!err) {
                 res.send("Successfully added a new article.");
@@ -65,14 +68,86 @@ app.route('/articles')
         });
     })
 
+
     .delete(function(req, res){
-        Article.deleteMany({}, function(err){
+
+        Article.deleteMany(function(err){
             if (!err) {
                 res.send("Deleted all documents.");
             } else {
                 res.send(err);
             }
         });
+    });
+
+
+// Specific Article Methods
+app.route('/articles/:articleTitle')
+
+    .get(function(req, res){
+
+        Article.findOne(
+            {title: req.params.articleTitle},
+            function(err, foundArticle){
+                if (!err){
+                    if (foundArticle) {
+                        res.send(foundArticle);
+                    } else {
+                        res.send("No article matching that title was found.");
+                    }
+                } else {
+                    res.send(err);
+                }
+            }
+        );
+    })
+
+
+    .put(function(req, res){
+
+        Article.update(
+            {title: req.params.articleTitle},
+            {title: req.body.title, content: req.body.content},
+            {overwrite: true},
+            function(err){
+                if (!err){
+                    res.send("Successfully updated article.")
+                } else {
+                    res.send(err);
+                }
+            }
+        );
+    })
+
+
+    .patch(function(req, res){
+
+        Article.update(
+            {title: req.params.articleTitle},
+            {$set: req.body},
+            function(err){
+                if (!err){
+                    res.send("Successfully patched article.");
+                } else {
+                    res.send(err);
+                }
+            }
+        );
+    })
+
+
+    .delete(function(req, res){
+
+        Article.deleteOne(
+            {title: req.params.articleTitle},
+            function(err){
+                if (!err) {
+                    res.send("Deleted all documents.");
+                } else {
+                    res.send(err);
+                }
+            }
+        );
     });
 
 
